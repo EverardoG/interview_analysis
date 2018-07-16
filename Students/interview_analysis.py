@@ -11,7 +11,7 @@ stopwords = set(STOPWORDS)
 stopwords.add("thing")
 
 class data():
-    def __init__(self,num_questions=8):
+    def __init__(self,num_questions=9):
         self.interview_csvs = list(filter(lambda x: x[-3:] == "csv",listdir())) #filter out csv files
         # ^this is a list of all csv files in the same dir as script
         self.num_questions = num_questions
