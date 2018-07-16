@@ -139,7 +139,7 @@ class data():
         cloud from them
         """
 
-        image_array = np.array(Image.open('olin_logo.jpg'))
+        image_array = np.array(Image.open('olin.jpg'))
         image_colors = ImageColorGenerator(image_array)
         for count,note_list in enumerate(self.notes_list):
             all_notes = " ".join(note_list)
