@@ -6,15 +6,16 @@ from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
-
-stopwords = set(STOPWORDS)
-stopwords.add("thing")
+import sys
 
 class data():
-    def __init__(self,num_questions=8):
-        self.interview_csvs = list(filter(lambda x: x[-3:] == "csv",listdir())) #filter out csv files
+    def __init__(self):
+        self.interview_directory = sys.argv[1]
+        print(self.interview_directory)
+        self.interview_csvs = list(filter(lambda x: x[-3:] == "csv",listdir("./"+self.interview_directory))) #filter out csv files
         # ^this is a list of all csv files in the same dir as script
-        self.num_questions = num_questions
+        self.num_questions = None
+        self.get_num_questions()
         self.notes_list = []
         self.word_frequency_lists = []
         self.filtered_lists = [] #The extended name is filtered_word_frequency_lists
@@ -32,6 +33,23 @@ class data():
         self.stopwords.add("thing")
         self.stopwords.add("things")
         self.stopwords.add("stuff")
+        self.stopwords.add('nono')
+        self.stopwords.remove('no')
+
+    def get_num_questions(self):
+        """
+        This function goes through the csv file and counts how many questions were asked.
+        This number is saved as an int in num_questions
+        """
+
+        csv_file = self.read_csv(self.interview_csvs[0])
+        num_questions = -1 #initialize num_questions at -1 to compensate for header row
+        for row in csv_file:
+            if row[1] != '':
+                num_questions +=1
+        self.num_questions = num_questions
+
+
     def extract_questions(self):
         """
         This function stores the questions asked in a list called questions_asked
@@ -61,7 +79,7 @@ class data():
         This function opens a csv file and reads its rows into a list of lists,
         each inner list containing all the info for one row
         """
-        open_file = open(file, newline='')
+        open_file = open("./"+self.interview_directory+"/"+file, newline='')
         file_reader = reader(open_file)
         file_data = []
         for row in file_reader:
@@ -124,7 +142,7 @@ class data():
         image_array = np.array(Image.open('olin_logo.png'))
         for count,note_list in enumerate(self.notes_list):
             all_notes = " ".join(note_list)
-            wordcloud = WordCloud(stopwords=self.stopwords, mask=image_array, background_color=(167,169,172), color_func=colour_function).generate(all_notes)
+            wordcloud = WordCloud(stopwords=self.stopwords, mask=image_array, background_color="white", color_func=colour_function).generate(all_notes)
             plt.title(self.questions_asked[count])
             plt.imshow(wordcloud)
             plt.axis('off')
@@ -133,6 +151,7 @@ class data():
 def colour_function(word, font_size, position, orientation, random_state=None,
                     **kwargs):
     return "hsl(198, 100%, 44%)"
+
 if __name__ == '__main__':
     interview_data = data()
     interview_data.generate_wordcloud()
