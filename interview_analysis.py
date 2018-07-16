@@ -2,7 +2,7 @@ from os import listdir, path
 from csv import reader
 from string import punctuation
 from collections import defaultdict
-from wordcloud import WordCloud, STOPWORDS
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
@@ -139,12 +139,13 @@ class data():
         cloud from them
         """
 
-        image_array = np.array(Image.open('olin_logo.png'))
+        image_array = np.array(Image.open('olin_logo.jpg'))
+        image_colors = ImageColorGenerator(image_array)
         for count,note_list in enumerate(self.notes_list):
             all_notes = " ".join(note_list)
             wordcloud = WordCloud(stopwords=self.stopwords, mask=image_array, background_color="white", color_func=colour_function).generate(all_notes)
             plt.title(self.questions_asked[count])
-            plt.imshow(wordcloud)
+            plt.imshow(wordcloud.recolor(color_func=image_colors))
             plt.axis('off')
             plt.show()
 
